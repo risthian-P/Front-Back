@@ -8,7 +8,28 @@ const Tabla = () => {
 
     const [pacientes, setPacientes] = useState([])
     const navigate = useNavigate()
-
+    
+    const handleDelete = async (id) => {
+        try {
+            const confirmar = confirm("Vas a registrar la salida de un paciente, ¿Estás seguro de realizar esta acción?")
+            if (confirmar) {
+                const token = localStorage.getItem('token')
+                const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/eliminar/${id}`
+                const headers= {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                const data ={
+                    salida:new Date().toString()
+                }
+                await axios.delete(url, {headers, data});
+                listarPacientes()
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
     const listarPacientes = async () => {
         try {
             const token = localStorage.getItem('token')
@@ -68,9 +89,13 @@ const Tabla = () => {
                                                 onClick={() => navigate(`/dashboard/visualizar/${paciente._id}`)}
                                                 />
 
-                                            <MdInfo className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2" />
+                                            <MdInfo 
+                                                className="h-7 w-7 text-slate-800 cursor-pointer inline-block mr-2" 
+                                                onClick={() => navigate(`/dashboard/actualizar/${paciente._id}`)}/>
 
-                                            <MdDeleteForever className="h-7 w-7 text-red-900 cursor-pointer inline-block" />
+                                            <MdDeleteForever 
+                                                className="h-7 w-7 text-red-900 cursor-pointer inline-block" 
+                                                onClick={() => { handleDelete(paciente._id) }} />
                                         </td>
                                     </tr>
                                 ))
